@@ -1,28 +1,30 @@
 <template>
   <header class="header">
-    <Login v-if="isLoginVisible" @hideLogin="hideLogin" />
-    <v-row class="align-center justify-space-between row">
-      <v-col md="3" class="header__logo">
-        <a href="#"><img src="@/assets/logo.png" alt=""/></a>
-      </v-col>
+    <v-container>
+      <Login v-if="isLoginVisible" @hideLogin="hideLogin"/>
+      <v-row class="align-center justify-space-between row">
+        <v-col md="4" class="d-flex header__logo">
+          <router-link :to="'/'"><img src="@/assets/logo.png" alt=""/></router-link>
+        </v-col>
 
-      <v-col md="3" class="d-flex header__items">
-        <div class="header__account">
-          <button @click="showLogin">Войти</button>
-        </div>
-
-        <div class="d-flex justify-center align-center header__basket">
-          <div class="header__basket-price">
-            <p>Корзина</p>
+        <v-col md="3" class="d-flex header__items">
+          <div class="header__account">
+            <button @click="showLogin">Войти</button>
           </div>
 
-          <div class="d-flex justify-center header__basket-quantity">
-            <img src="@/assets/basket.svg" alt="">
-            <p>0</p>
-          </div>
-        </div>
-      </v-col>
-    </v-row>
+          <button class="d-flex justify-center align-center header__basket" @click="$router.push('cart')">
+            <div class="header__basket-price">
+              <p>Корзина</p>
+            </div>
+
+            <div class="d-flex justify-center header__basket-quantity">
+              <img src="@/assets/basket.svg" alt="">
+              <p>0</p>
+            </div>
+          </button>
+        </v-col>
+      </v-row>
+    </v-container>
   </header>
 </template>
 
@@ -55,11 +57,12 @@ export default {
   border-bottom: 1px solid #F6F6F6;
 
   &__logo {
+    margin: 28px 0;
   }
+
   &__items {
     justify-content: end;
     gap: 15px;
-    margin: 30px 0px;
   }
 
   &__account {
@@ -78,7 +81,11 @@ export default {
     border-radius: 30px;
     color: #fff;
     font-weight: bold;
-    padding: 12px 23px 13px 23px;
+    padding: 12px 23px;
+
+    &:hover {
+      background-color: #f24701;
+    }
 
     &-price {
       padding-right: 13px;
@@ -91,11 +98,24 @@ export default {
   }
 }
 
+@media (max-width: 817px) {
+  .header {
+    &__logo {
+      margin-bottom: 10px;
+    }
+    &__items {
+      justify-content: start;
+      margin-bottom: 10px;
+    }
+  }
+}
+
 @media (max-width: 708px) {
   .header__items {
     justify-content: start;
   }
 }
+
 @media (max-width: 640px) {
   .header {
     &__logo {
@@ -105,10 +125,12 @@ export default {
         max-width: 100%;
       }
     }
+
     &__items {
       flex-wrap: wrap;
       align-items: center;
     }
+
     .row {
       flex-direction: column;
     }

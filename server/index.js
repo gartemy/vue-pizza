@@ -14,7 +14,15 @@ const PORT = process.env.PORT || 8081
 app.get('/pizzas', async (req, res) => {
 
     try {
-        const pizzas = await pool.query('select * from "pizzas"')
+        const pizzas = await pool.query('SELECT p.pizza_id, STRING_AGG(DISTINCT po.img, \',\' ORDER BY po.img) as img, p.title, pc.category_id, p.rating, \n' +
+            'STRING_AGG(DISTINCT o.type, \',\' ORDER BY o.type) as types, \n' +
+            'STRING_AGG(DISTINCT o.size::character varying, \',\') as sizes, \n' +
+            'STRING_AGG(DISTINCT po.price::character varying, \',\') as prices\n' +
+            'FROM pizzas p \n' +
+            'INNER JOIN pizzas_categories pc ON p.pizza_id = pc.pizza_id\n' +
+            'INNER JOIN pizzas_options po ON p.pizza_id = po.pizza_id\n' +
+            'INNER JOIN options o ON po.option_id = o.option_id\n' +
+            'GROUP BY p.pizza_id, pc.category_id')
         res.send(pizzas.rows)
     } catch (e) {
         console.error(e.message);
@@ -25,7 +33,7 @@ app.get('/pizzas', async (req, res) => {
 app.get('/categories', async (req, res) => {
 
     try {
-        const categories = await pool.query('select * from "pizza_category"')
+        const categories = await pool.query('select * from "categories"')
         res.send(categories.rows)
     } catch (e) {
         console.error(e.message);
@@ -33,22 +41,11 @@ app.get('/categories', async (req, res) => {
 
 })
 
-app.get('/types', async (req, res) => {
+app.get('/sortings', async (req, res) => {
 
     try {
-        const types = await pool.query('select * from "pizza_type"')
-        res.send(types.rows)
-    } catch (e) {
-        console.error(e.message);
-    }
-
-})
-
-app.get('/sizes', async (req, res) => {
-
-    try {
-        const sizes = await pool.query('select * from "pizza_size"')
-        res.send(sizes.rows)
+        const sortings = await pool.query('select * from "sortings"')
+        res.send(sortings.rows)
     } catch (e) {
         console.error(e.message);
     }
@@ -69,7 +66,6 @@ app.post('/email', async (req, res) => {
         const userId = await pool.query('select id from users where user_email = $1', [req.body.email])
 
         await pool.query('insert into "user_code" ("user_email", "secret_code", "user_id") values ($1, $2, $3) RETURNING id', [req.body.email, secretCode, userId.rows[0].id])
-        console.log(secretCode)
     } catch (e) {
         console.log(e.message)
     }
@@ -85,16 +81,16 @@ app.post('/email', async (req, res) => {
 
 app.post('/verify', async (req, res) => {
 
-        try {
-            let secretCode = await pool.query('select uc.id, uc.secret_code from user_code uc INNER JOIN users us ON uc.user_id = us.id and uc.user_email = $1 ORDER BY uc.id DESC', [req.body.email])
-            if (req.body.code == secretCode.rows[0].secret_code) {
-                console.log('Успешная авторизация!')
-            } else {
-                console.log('Неправильный код!')
-            }
-        } catch (e) {
-            console.log(e.message)
+    try {
+        let secretCode = await pool.query('select uc.id, uc.secret_code from user_code uc INNER JOIN users us ON uc.user_id = us.id and uc.user_email = $1 ORDER BY uc.id DESC', [req.body.email])
+        if (req.body.code == secretCode.rows[0].secret_code) {
+            console.log('Успешная авторизация!')
+        } else {
+            console.log('Неправильный код!')
         }
+    } catch (e) {
+        console.log(e.message)
+    }
 
 })
 
