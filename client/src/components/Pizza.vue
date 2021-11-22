@@ -8,16 +8,16 @@
     </div>
     <div class="menu__item-options">
       <div class="item-options d-flex align-center">
-        <v-col class="item-options__type text-center" v-for="type in types" :key="type">
-          <button :class="{'active' : type === activeType }" :disabled="type == 'тонкое' && activeSize == 25"
-                  @click="activeType = type">{{ type }}
+        <v-col class="item-options__type text-center" v-for="(type, index) in ['тонкое', 'традиционное']" :key="type">
+          <button :class="{'active' : index === activeType }" :disabled="!options[index].sizes.includes(activeSize)"
+                  @click="activeType = index">{{ type }}
           </button>
         </v-col>
       </div>
 
       <div class="d-flex item-options">
-        <v-col class="item-options__size text-center" v-for="size in sizes" :key="size">
-          <button :class="{'active' : size === activeSize }" :disabled="size == 25 && activeType == 'тонкое'"
+        <v-col class="item-options__size text-center" v-for="size in [25, 30, 35]" :key="size">
+          <button :class="{'active' : size === activeSize }" :disabled="!options[activeType].sizes.includes(size)"
                   @click="activeSize = size">{{ size }} см.
           </button>
         </v-col>
@@ -25,7 +25,7 @@
     </div>
 
     <div class="d-flex justify-space-between menu__item-adding align-center">
-      <p class="item-adding__price">от {{ getPrice }} ₽</p>
+      <p class="item-adding__price">от {{getPrice}} ₽</p>
       <button class="d-flex justify-end align-center item-adding__btn text-center" @click="counter++">
         <svg class="me-1" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -43,39 +43,58 @@
 export default {
   name: "Pizza",
   props: {
-    img: Array,
-    title: String,
-    types: Array,
-    sizes: Array,
-    prices: Array,
+    img: {
+      type: Array,
+      required: true
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    options: {
+      type: Array,
+      required: true
+    },
+    prices: {
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {
-      activeType: 'традиционное',
-      activeSize: '30',
+      activeType: 1,
+      activeSize: 30,
       counter: 0
     }
   },
   computed: {
-    getPrice() {
-      let price = new Map()
-
-      for (let i = 0; i < this.sizes.length; i++) {
-        price.set(this.sizes[i], this.prices[i])
-      }
-
-      return price.get(this.activeSize)
-    },
     getImg() {
+      const types = [...new Set(this.options.map((item, index) => index))]
       let img = new Map()
 
-      for (let i = 0; i < this.types.length; i++) {
-        img.set(this.types[i], this.img[i])
+      for (let type in types) {
+        img.set(types[type], this.img[type])
       }
 
       return img.get(this.activeType)
+    },
+    getPrice() {
+      let sizes = []
+      let price = new Map()
+
+      for (let option in this.options) {
+        sizes = sizes.concat(this.options[option].sizes)
+      }
+
+      sizes = [...new Set(sizes.sort((a,b) => a - b))]
+
+      for (let size in sizes) {
+        price.set(sizes[size], this.prices[size])
+      }
+
+      return price.get(this.activeSize)
     }
-  }
+  },
 }
 </script>
 

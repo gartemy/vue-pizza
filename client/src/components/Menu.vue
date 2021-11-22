@@ -44,11 +44,10 @@
       <v-row class="menu__items justify-center">
         <pizza v-for="pizza in sortedPizzas"
                :key="pizza.id"
-               :img="pizza.img.split(',')"
+               :img="pizza.img"
                :title="pizza.title"
-               :types="pizza.types.split(',')"
-               :sizes="pizza.sizes.split(',')"
-               :prices="pizza.prices.split(',')">
+               :options="pizza.options"
+               :prices="pizza.prices">
         </pizza>
       </v-row>
     </v-container>
@@ -91,7 +90,7 @@ export default {
       if (this.activeSorting === 1) {
         pizzasArray.sort((a, b) => b.rating - a.rating)
       } else if (this.activeSorting === 2) {
-        pizzasArray.sort((a, b) => a.prices.split(',')[1] - b.prices.split(',')[1])
+        pizzasArray.sort((a, b) => a.prices[1] - b.prices[1])
       } else {
         pizzasArray.sort((a, b) => {
           if (a.title < b.title) return -1

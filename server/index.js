@@ -14,15 +14,11 @@ const PORT = process.env.PORT || 8081
 app.get('/pizzas', async (req, res) => {
 
     try {
-        const pizzas = await pool.query('SELECT p.pizza_id, STRING_AGG(DISTINCT po.img, \',\' ORDER BY po.img) as img, p.title, pc.category_id, p.rating, \n' +
-            'STRING_AGG(DISTINCT o.type, \',\' ORDER BY o.type) as types, \n' +
-            'STRING_AGG(DISTINCT o.size::character varying, \',\') as sizes, \n' +
-            'STRING_AGG(DISTINCT po.price::character varying, \',\') as prices\n' +
-            'FROM pizzas p \n' +
-            'INNER JOIN pizzas_categories pc ON p.pizza_id = pc.pizza_id\n' +
-            'INNER JOIN pizzas_options po ON p.pizza_id = po.pizza_id\n' +
-            'INNER JOIN options o ON po.option_id = o.option_id\n' +
-            'GROUP BY p.pizza_id, pc.category_id')
+        const pizzas = await pool.query(`SELECT p.pizza_id, po.img, p.title, pc.category_id, p.rating, o.option as options, po.prices
+                                         FROM pizzas p
+                                                  INNER JOIN pizzas_categories pc ON p.pizza_id = pc.pizza_id
+                                                  INNER JOIN pizzas_options po ON p.pizza_id = po.pizza_id
+                                                  INNER JOIN options o ON po.option_id = o.option_id`)
         res.send(pizzas.rows)
     } catch (e) {
         console.error(e.message);
