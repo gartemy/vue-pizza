@@ -12,14 +12,15 @@
             <button @click="showLogin">Войти</button>
           </div>
 
-          <button class="d-flex justify-center align-center header__basket" @click="$router.push('cart')">
-            <div class="header__basket-price">
-              <p>Корзина</p>
+          <button class="d-flex justify-center align-center header__cart" @click="$router.push('cart')">
+            <div class="header__cart-price">
+              <p v-if="totalPrice === 0">Корзина</p>
+              <p v-else>{{totalPrice}} ₽</p>
             </div>
 
-            <div class="d-flex justify-center header__basket-quantity">
-              <img src="@/assets/basket.svg" alt="">
-              <p>0</p>
+            <div class="d-flex justify-center align-center header__cart-quantity">
+              <img src="@/assets/cart-button.svg" alt="">
+              <p>{{totalCount}}</p>
             </div>
           </button>
         </v-col>
@@ -33,12 +34,22 @@ import Login from '@/components/Login'
 
 export default {
   name: 'top',
+  props: {
+    totalPrice: {
+      type: Number,
+      required: true
+    },
+    totalCount: {
+      type: Number,
+      required: true
+    }
+  },
   components: {
     Login
   },
   data() {
     return {
-      isLoginVisible: false
+      isLoginVisible: false,
     }
   },
   methods: {
@@ -75,7 +86,7 @@ export default {
     }
   }
 
-  &__basket {
+  &__cart {
     cursor: pointer;
     background-color: #FE5F1E;
     border-radius: 30px;
@@ -88,6 +99,7 @@ export default {
     }
 
     &-price {
+      white-space: nowrap;
       padding-right: 13px;
       border-right: 1px solid rgba(255, 255, 255, 0.25);;
     }

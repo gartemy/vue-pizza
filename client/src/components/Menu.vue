@@ -44,10 +44,7 @@
       <v-row class="menu__items justify-center">
         <pizza v-for="pizza in sortedPizzas"
                :key="pizza.id"
-               :img="pizza.img"
-               :title="pizza.title"
-               :options="pizza.options"
-               :prices="pizza.prices">
+               :pizza="pizza">
         </pizza>
       </v-row>
     </v-container>
@@ -65,7 +62,6 @@ export default {
     return {
       categories: [],
       sortings: [],
-      pizzas: [],
       activeCategory: 1,
       activeSorting: 1,
       menu: false
@@ -81,7 +77,7 @@ export default {
       return sorting?.title
     },
     sortedPizzas() {
-      let pizzasArray = this.pizzas
+      let pizzasArray = this.$store.getters.pizzas
 
       if (this.activeCategory !== 1) {
         pizzasArray = pizzasArray.filter(item => item.category_id === this.activeCategory)
@@ -102,9 +98,7 @@ export default {
     },
   },
   mounted() {
-    axios.get('pizzas').then(response => {
-      this.pizzas = response.data
-    })
+    this.$store.dispatch('setPizzas')
     axios.get('categories').then(response => {
       this.categories = response.data
     })

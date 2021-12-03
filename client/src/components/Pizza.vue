@@ -4,20 +4,22 @@
       <img :src="require(`@/assets/pizzas/${getImg}`)" alt="">
     </div>
     <div class="menu__item-title">
-      <h2 class="text-center">{{ title }}</h2>
+      <h2 class="text-center">{{ pizza.title }}</h2>
     </div>
     <div class="menu__item-options">
       <div class="item-options d-flex align-center">
         <v-col class="item-options__type text-center" v-for="(type, index) in ['тонкое', 'традиционное']" :key="type">
-          <button :class="{'active' : index === activeType }" :disabled="!options[index].sizes.includes(activeSize)"
-                  @click="activeType = index">{{ type }}
+          <button :class="{'active' : index === typeIndex && pizza.options[index].sizes.includes(activeSize) }"
+                  :disabled="!pizza.options[index].sizes.includes(activeSize)"
+                  @click="typeIndex = index; activeType = type">{{ type }}
           </button>
         </v-col>
       </div>
 
       <div class="d-flex item-options">
         <v-col class="item-options__size text-center" v-for="size in [25, 30, 35]" :key="size">
-          <button :class="{'active' : size === activeSize }" :disabled="!options[activeType].sizes.includes(size)"
+          <button :class="{'active' : size === activeSize && pizza.options[typeIndex].sizes.includes(size) }"
+                  :disabled="!pizza.options[typeIndex].sizes.includes(size)"
                   @click="activeSize = size">{{ size }} см.
           </button>
         </v-col>
@@ -25,15 +27,15 @@
     </div>
 
     <div class="d-flex justify-space-between menu__item-adding align-center">
-      <p class="item-adding__price">от {{getPrice}} ₽</p>
-      <button class="d-flex justify-end align-center item-adding__btn text-center" @click="counter++">
+      <p class="item-adding__price">от {{ getPrice }} ₽</p>
+      <button class="d-flex justify-end align-center item-adding__btn text-center" @click="pizza.quantity++; addToCart(pizza)">
         <svg class="me-1" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
               d="M10.8 4.8H7.2V1.2C7.2 0.5373 6.6627 0 6 0C5.3373 0 4.8 0.5373 4.8 1.2V4.8H1.2C0.5373 4.8 0 5.3373 0 6C0 6.6627 0.5373 7.2 1.2 7.2H4.8V10.8C4.8 11.4627 5.3373 12 6 12C6.6627 12 7.2 11.4627 7.2 10.8V7.2H10.8C11.4627 7.2 12 6.6627 12 6C12 5.3373 11.4627 4.8 10.8 4.8Z"
               fill="#EB5A1E"></path>
         </svg>
         <p>Добавить</p>
-        <span class="d-flex justify-center align-center ms-1" v-if="counter > 0">{{ counter }}</span>
+        <span class="d-flex justify-center align-center ms-1" v-if="pizza.quantity > 0"> {{ pizza.quantity }}</span>
       </button>
     </div>
   </v-col>
@@ -43,58 +45,59 @@
 export default {
   name: "Pizza",
   props: {
-    img: {
-      type: Array,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    options: {
-      type: Array,
-      required: true
-    },
-    prices: {
-      type: Array,
+    pizza: {
+      type: Object,
       required: true
     }
   },
   data() {
     return {
-      activeType: 1,
+      typeIndex: 1,
+      activeType: 'традиционное',
       activeSize: 30,
-      counter: 0
     }
   },
   computed: {
     getImg() {
-      const types = [...new Set(this.options.map((item, index) => index))]
+      const types = [...new Set(this.pizza.options.map((item, index) => index))]
       let img = new Map()
 
       for (let type in types) {
-        img.set(types[type], this.img[type])
+        img.set(types[type], this.pizza.img[type])
       }
 
-      return img.get(this.activeType)
+      return img.get(this.typeIndex)
     },
     getPrice() {
       let sizes = []
       let price = new Map()
 
-      for (let option in this.options) {
-        sizes = sizes.concat(this.options[option].sizes)
+      for (let option in this.pizza.options) {
+        sizes = sizes.concat(this.pizza.options[option].sizes)
       }
 
-      sizes = [...new Set(sizes.sort((a,b) => a - b))]
+      sizes = [...new Set(sizes.sort((a, b) => a - b))]
 
       for (let size in sizes) {
-        price.set(sizes[size], this.prices[size])
+        price.set(sizes[size], this.pizza.prices[size])
       }
 
       return price.get(this.activeSize)
     }
   },
+  methods: {
+    addToCart(pizza) {
+      let cartItem = {
+        id: pizza.pizza_id,
+        img: this.getImg,
+        title: pizza.title,
+        type: this.activeType,
+        size: this.activeSize,
+        price: this.getPrice
+      }
+      this.$store.commit('ADD_TO_CART', cartItem)
+    }
+  }
 }
 </script>
 

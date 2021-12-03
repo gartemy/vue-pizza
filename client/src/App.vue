@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <Header/>
-    <router-view></router-view>
+    <Header :totalPrice="totalPrice" :totalCount="totalCount"/>
+    <router-view :totalPrice="totalPrice" :totalCount="totalCount"></router-view>
   </v-app>
 </template>
 
@@ -12,6 +12,14 @@ export default {
   name: 'app',
   components: {
     Header
+  },
+  computed: {
+    totalPrice() {
+      return this.$store.state.cart.cartItems.reduce((res, pizza) => res + pizza.price * pizza.quantity, 0)
+    },
+    totalCount() {
+      return this.$store.state.cart.cartItems.reduce((res, pizza) => res + pizza.quantity, 0)
+    }
   }
 }
 </script>
