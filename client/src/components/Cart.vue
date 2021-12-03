@@ -43,7 +43,7 @@
               </button>
             </div>
           </div>
-          <div class="cart__item-price"><b>{{ item.price }} ₽</b></div>
+          <div class="cart__item-price"><b>{{ item.price * item.quantity }} ₽</b></div>
           <div class="cart__item-remove d-flex justify-center align-center">
             <button class="button--circle" @click="$store.commit('REMOVE_FROM_CART', index)">
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +71,7 @@
             </svg>
             <span class="ps-2">Вернуться назад</span>
           </button>
-          <button>Оплатить сейчас</button>
+          <button class="pay-btn">Оплатить сейчас</button>
         </div>
       </div>
     </div>
@@ -236,24 +236,21 @@ img {
           background-color: #000000;
           border-color: #000000;
         }
+      }
 
-        &:last-child {
-          color: #FFFFFF;
-          font-weight: 600;
-          background-color: #FE5F1E;
-          border: none;
+      .pay-btn {
+        color: #FFFFFF;
+        font-weight: 600;
+        background-color: #FE5F1E;
+        border: none;
 
-          &:hover {
-            background-color: #f24701;
-          }
+        &:hover {
+          background-color: #f24701;
         }
       }
     }
   }
-
-
 }
-
 
 .cart--empty {
   max-width: 600px;
@@ -285,6 +282,77 @@ img {
 
     &:hover {
       background-color: #3d3d3d;
+    }
+  }
+}
+
+@media (max-width: 990px) {
+  .cart__item {
+    flex-direction: column;
+    position: relative;
+
+    &-icon {
+      width: 100%;
+      height: 100%;
+    }
+
+    &-info, &-count {
+      width: 100%;
+      padding-bottom: 20px;
+
+      h3, p {
+        text-align: center;
+      }
+    }
+
+    &-count {
+      justify-content: center !important;
+
+      b {
+        padding: 0 10px;
+      }
+    }
+
+    &-price {
+      width: 100%;
+
+      b {
+        padding-left: 20px;
+      }
+
+    }
+
+    &-remove {
+      position: absolute;
+      top: 20px;
+      left: 94%;
+    }
+  }
+}
+
+@media (max-width: 650px) {
+  .cart__bottom {
+    &-info, &-buttons {
+      flex-direction: column;
+    }
+    button:first-child {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .cart {
+    &__top {
+      flex-direction: column;
+    }
+    &__title h2 {
+      margin-bottom: 20px;
+    }
+    &__bottom {
+      &-info span {
+        font-size: 20px;
+      }
     }
   }
 }
