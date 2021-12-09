@@ -5,7 +5,8 @@ import vuetify from './plugins/vuetify'
 import router from './router'
 import {store} from './store'
 
-axios.defaults.baseURL = 'http://localhost:8081/'
+axios.defaults.baseURL = 'http://localhost:8081/api/'
+axios.defaults.withCredentials = true
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios

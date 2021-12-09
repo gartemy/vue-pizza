@@ -32,7 +32,7 @@
           <div v-if="stage == 'verify'" class="modal-body">
             <slot name="body">
               <div class="text-center">
-                <input type="password" v-model="code" name="code" maxlength="4" placeholder="****"><br>
+                <input type="text" v-model="code" name="code" maxlength="4" placeholder="****"><br>
                 <button @click="verify">Отправить код</button>
               </div>
             </slot>
@@ -59,18 +59,25 @@ export default {
       this.$emit('hideLogin')
     },
     async login() {
-      let request = await axios.post('email', {
-        email: this.mailAdress,
+      await axios.post('login', {
+        email: this.mailAdress
       });
-      console.log(request.data.success)
       this.stage = 'verify'
     },
     async verify() {
-      let request = await axios.post('verify', {
+      const token = await axios.post('verify', {
         email: this.mailAdress,
         code: this.code
       });
-      console.log(request.data.success)
+      if (token.data.message) {
+        alert('Неправильный код!')
+      } else {
+        localStorage.setItem('token', token.data.accessToken)
+        localStorage.setItem('refreshToken', token.data.refreshToken)
+        this.hideLogin()
+        this.$store.commit('LOGIN')
+        await this.$router.push('/customer')
+      }
     }
   }
 }
@@ -136,7 +143,7 @@ export default {
     position: absolute;
     left: 15px;
     content: ' ';
-    height: 33px;
+    height: 28px;
     width: 2px;
     background-color: #000;
   }
@@ -204,6 +211,21 @@ export default {
 
 .verify__address {
   color: #000;
+}
+
+@media (max-width: 460px) {
+  .modal-container {
+    width: 90%;
+  }
+  .modal-header {
+    h3 {
+      font-size: 24px;
+    }
+    &__close:before, &__close:after {
+      height: 24px;
+    }
+
+  }
 }
 
 </style>
