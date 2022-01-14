@@ -10,7 +10,7 @@ class CustomerController {
             }
             const {email} = req.body
             await customerService.login(email)
-            return res.send('Успешно!')
+            return res.send('Письмо успешно отправлено!')
         } catch (e) {
             console.log(e)
         }
@@ -27,7 +27,8 @@ class CustomerController {
             res.cookie('refreshToken', customerData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
             return res.json(customerData)
         } catch (e) {
-            return res.status(400)
+            console.log(e)
+            return res.json({message: 'Неправильный код!'})
         }
     }
 
@@ -49,6 +50,46 @@ class CustomerController {
             res.cookie('refreshToken', customerData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
             return res.json(customerData);
         } catch (e) {
+            console.log(e)
+            return res.json({message: 'Пустой resreshToken'})
+        }
+    }
+
+    async getCustomerInfo(req, res) {
+        try {
+            const customerInfo = await customerService.getCustomerInfo(req.customer.customerId)
+            return res.send(customerInfo)
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
+    async setCustomerName(req, res) {
+        try {
+            const {firstName} = req.body
+            await customerService.setCustomerName(req.customer.customerId, firstName)
+            return res.send('Имя успешно изменено!')
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
+    async setCustomerPhone(req, res) {
+        try {
+            const {phone} = req.body
+            const result = await customerService.setCustomerPhone(req.customer.customerId, phone)
+            return res.json(result)
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
+    async setCustomerBirthday(req, res) {
+        try {
+            const {birthday} = req.body
+            await customerService.setCustomerBirthday(req.customer.customerId, birthday)
+            return res.send('День рождения успешно добавлен!')
+        } catch(e) {
             console.log(e)
         }
     }

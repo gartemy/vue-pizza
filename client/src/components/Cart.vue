@@ -5,13 +5,13 @@
         <div class="cart__title d-flex align-end">
           <h2 class="d-flex align-center"><img src="@/assets/cart.svg" alt="">Корзина</h2>
         </div>
-        <div class="cart__clear d-flex align-center" @click="$store.state.cart.cartItems = []">
+        <div class="cart__clear d-flex align-center" @click="$store.commit('CLEAR_CART')">
           <img src="@/assets/cart-clear.svg" alt="">
           <span>Очистить корзину</span>
         </div>
       </div>
       <div class="cart__items">
-        <div class="cart__item d-flex align-center" v-for="(item, index) in $store.state.cart.cartItems" :key="item.id">
+        <div class="cart__item d-flex align-center" v-for="(item, index) in $store.getters.cartItems" :key="item.id">
           <div class="cart__item-icon">
             <img :src="require(`@/assets/pizzas/${item.img}`)" alt="">
           </div>
@@ -98,7 +98,7 @@ export default {
       type: Number,
       required: true
     }
-  },
+  }
 }
 </script>
 

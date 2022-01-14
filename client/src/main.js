@@ -9,7 +9,6 @@ axios.defaults.baseURL = 'http://localhost:8081/api/'
 axios.defaults.withCredentials = true
 
 Vue.config.productionTip = false
-Vue.prototype.$http = axios
 
 new Vue({
   vuetify,

@@ -1,7 +1,11 @@
 import Vue from "vue";
 
 const state = {
-    cartItems: [],
+    cartItems: []
+}
+
+const getters = {
+    cartItems: state => state.cartItems
 }
 
 const mutations = {
@@ -24,10 +28,14 @@ const mutations = {
     },
     'REMOVE_FROM_CART'(state, index) {
         state.cartItems = state.cartItems.filter((item, i) => i !== index)
+    },
+    'CLEAR_CART' (state) {
+        state.cartItems = []
     }
 }
 
 export default {
     state,
-    mutations,
+    getters,
+    mutations
 }

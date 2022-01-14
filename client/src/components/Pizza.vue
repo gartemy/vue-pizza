@@ -35,7 +35,7 @@
               fill="#EB5A1E"></path>
         </svg>
         <p>Добавить</p>
-        <span class="d-flex justify-center align-center ms-1" v-if="pizza.quantity > 0"> {{ pizza.quantity }}</span>
+        <span class="d-flex justify-center align-center ms-1" v-if="pizza.quantity > 0"> {{ pizza.quantity }} </span>
       </button>
     </div>
   </v-col>

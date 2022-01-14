@@ -9,7 +9,7 @@
 
         <v-col md="3" class="d-flex header__items align-center">
           <div class="header__account" @click="checkAuth">
-            <a v-if="isAuth == false" class="header__account-auth">Войти</a>
+            <a v-if="!$store.getters.isAuth" class="header__account-auth">Войти</a>
             <a class="d-flex flex-column justify-center align-center header__account-cabinet" v-else>
               <svg width="28" height="27" viewBox="0 0 25 24" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -18,7 +18,8 @@
                 <path d="M8.75 15.75a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM17 15.75a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
                       fill="#000"></path>
               </svg>
-              <span>Кабинет</span>
+              <span v-if="$store.getters.customer.first_name">{{ $store.getters.customer.first_name }}</span>
+              <span v-else>Кабинет</span>
             </a>
           </div>
 
@@ -41,6 +42,7 @@
 
 <script>
 import Login from '@/components/Login'
+import axios from "axios";
 
 export default {
   name: 'top',
@@ -62,30 +64,27 @@ export default {
       isLoginVisible: false,
     }
   },
-  computed: {
-    isAuth() {
-      return this.$store.state.isAuth
-    }
-  },
   methods: {
     showLogin() {
-      if (this.$store.state.isAuth) {
-        this.$router.push('/cart')
-      } else {
-        this.isLoginVisible = true
-        document.querySelector('html').classList.add('lock')
-      }
+      this.isLoginVisible = true
+      document.querySelector('html').classList.add('lock')
     },
     hideLogin() {
       this.isLoginVisible = false
       document.querySelector('html').classList.remove('lock')
     },
-    checkAuth() {
-      if (localStorage.getItem('token')) {
-        this.$store.commit('LOGIN')
-        this.$router.push('/customer')
-      } else {
-        this.showLogin()
+    async checkAuth() {
+      try {
+        const response = await axios.get('refresh', {withCredentials: true})
+        if (response.data.message) {
+          this.showLogin()
+        } else {
+          localStorage.setItem('token', response.data.accessToken)
+          this.$store.commit('LOGIN')
+          await this.$router.push(`/customer/${this.$store.getters.customer.customer_id}`)
+        }
+      } catch (e) {
+        console.log(e.response.data.message)
       }
     }
   }
@@ -123,8 +122,22 @@ export default {
       color: #2C2C2C !important;
       font-weight: 600;
       margin: 0 23px;
-    }
 
+      svg {
+        transition: transform 500ms ease 0s;
+      }
+
+      &:hover {
+        color:rgb(255, 105, 0)!important;
+
+        svg {
+          transform: rotate(15deg) scale(1.1);
+        }
+        path {
+          fill: rgb(255, 105, 0);
+        }
+      }
+    }
   }
 
   &__cart {

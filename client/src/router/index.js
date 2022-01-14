@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Menu from '@/components/Menu'
 import Cart from '@/components/Cart'
-import CustomerPage from "@/components/CustomerPage"
+import Customer from "@/components/Customer"
 
 Vue.use(VueRouter)
 
@@ -19,9 +19,9 @@ export default new VueRouter({
             component: Cart
         },
         {
-            path: '/customer',
+            path: '/customer/:id',
             name: 'customer',
-            component: CustomerPage
+            component: Customer
         }
     ]
 })

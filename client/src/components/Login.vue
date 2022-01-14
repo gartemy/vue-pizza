@@ -14,7 +14,7 @@
           <slot name="body">
             <p class="mb-2">Адрес электронной почты</p>
             <div class="text-center">
-              <input type="email" v-model="mailAdress" name="email" placeholder="example@mail.ru"
+              <input type="email" v-model="mailAddress" name="email" placeholder="example@mail.ru"
               ><br>
               <button @click="login">Выслать код</button>
             </div>
@@ -26,13 +26,14 @@
             <h3 class="mb-2">Вход на сайт</h3>
             <div class="modal-header__close" @click="hideLogin"></div>
           </div>
-          <p>Код отправили сообщением на <br> <span class="verify__address">{{ mailAdress }}</span></p>
+          <p>Код отправили сообщением на <br> <span class="verify__address">{{ mailAddress }}</span></p>
         </div>
 
           <div v-if="stage == 'verify'" class="modal-body">
             <slot name="body">
+              <p class="mb-2" v-if="error" :style="{color: 'red'}">Неправильный код!</p>
               <div class="text-center">
-                <input type="text" v-model="code" name="code" maxlength="4" placeholder="****"><br>
+                <input type="text" v-model="code" name="code" maxlength="4" placeholder="****" :class="{failed: error}"><br>
                 <button @click="verify">Отправить код</button>
               </div>
             </slot>
@@ -51,7 +52,8 @@ export default {
     return {
       stage: 'login',
       code: '',
-      mailAdress: ''
+      mailAddress: '',
+      error: false,
     }
   },
   methods: {
@@ -59,31 +61,44 @@ export default {
       this.$emit('hideLogin')
     },
     async login() {
-      await axios.post('login', {
-        email: this.mailAdress
-      });
-      this.stage = 'verify'
+      try {
+        await axios.post('login', {
+          email: this.mailAddress
+        })
+        this.stage = 'verify'
+      } catch(e) {
+        console.log(e.response.data.message)
+      }
     },
     async verify() {
-      const token = await axios.post('verify', {
-        email: this.mailAdress,
-        code: this.code
-      });
-      if (token.data.message) {
-        alert('Неправильный код!')
-      } else {
-        localStorage.setItem('token', token.data.accessToken)
-        localStorage.setItem('refreshToken', token.data.refreshToken)
-        this.hideLogin()
-        this.$store.commit('LOGIN')
-        await this.$router.push('/customer')
+      try {
+        const response = await axios.post('verify', {
+          email: this.mailAddress,
+          code: this.code
+        })
+        if (response.data.message) {
+          this.error = true
+        } else {
+          localStorage.setItem('token', response.data.accessToken)
+          this.hideLogin()
+          this.$store.commit('LOGIN')
+          await this.$store.dispatch('getCustomer')
+        }
+      } catch(e) {
+        console.log(e.response.data.message)
       }
+
     }
   }
 }
 </script>
 
 <style lang="scss">
+
+.failed {
+  border-color: red!important;
+}
+
 .modal-mask {
   position: fixed;
   z-index: 9998;
