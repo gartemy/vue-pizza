@@ -12,6 +12,23 @@ const getters = {
 const mutations = {
     'SET_PIZZAS'(state, pizzas) {
         state.pizzas = pizzas
+    },
+    INCREASE_PIZZA(state, id) {
+        const pizza = state.pizzas.filter(item => item.pizza_id === id)
+        pizza[0].quantity++
+    },
+    DECREASE_PIZZA(state, id) {
+        const pizza = state.pizzas.filter(item => item.pizza_id === id)
+        pizza[0].quantity--
+    },
+    'REMOVE_PIZZA' (state, id) {
+        const pizza = state.pizzas.filter(item => item.pizza_id === id)
+        pizza[0].quantity = 0
+    },
+    'RESET_PIZZAS' (state) {
+        state.pizzas.forEach(item => {
+            item.quantity = 0
+        })
     }
 }
 

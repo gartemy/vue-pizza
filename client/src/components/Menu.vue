@@ -98,7 +98,9 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch('setPizzas')
+    if (!this.$store.getters.pizzas.length) {
+      this.$store.dispatch('setPizzas')
+    }
     axios.get('categories').then(response => {
       this.categories = response.data
     })
