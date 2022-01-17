@@ -1,17 +1,26 @@
 import axios from 'axios'
-import router from '../../router'
 
 const state = {
     customer: {},
-    isAuth: false
+    isAuth: false,
+    isLoginVisible: false,
 }
 
 const getters = {
     customer: state => state.customer,
-    isAuth: state => state.isAuth
+    isAuth: state => state.isAuth,
+    isLoginVisible: state => state.isLoginVisible
 }
 
 const mutations = {
+    'SHOW_LOGIN'(state) {
+        state.isLoginVisible = true
+        document.querySelector('html').classList.add('lock')
+    },
+    'HIDE_LOGIN'(state) {
+        state.isLoginVisible = false
+        document.querySelector('html').classList.remove('lock')
+    },
     'LOGIN'(state) {
         state.isAuth = true
     },
@@ -49,8 +58,18 @@ const actions = {
                 response.data.rows[0].birthday = birthday.join('-')
             }
             commit('GET_INFO', response.data.rows[0])
-            await router.push(`/customer/${response.data.rows[0].customer_id}`)
-        } catch(e) {
+        } catch (e) {
+            console.log(e)
+        }
+    },
+    async checkAuth({commit}) {
+        try {
+            const response = await axios.get('refresh', {withCredentials: true})
+            if (!response.data.message) {
+                localStorage.setItem('token', response.data.accessToken)
+                commit('LOGIN')
+            }
+        } catch (e) {
             console.log(e)
         }
     }

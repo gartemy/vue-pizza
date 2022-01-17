@@ -97,24 +97,15 @@ export default {
       localStorage.removeItem('token')
       this.$store.commit('LOGOUT')
       await this.$router.push('/')
-    },
-    async checkAuth() {
-      try {
-        if (localStorage.getItem('token')) {
-          const response = await axios.get('refresh', {withCredentials: true})
-          localStorage.setItem('token', response.data.accessToken)
-          this.$store.commit('LOGIN')
-          await this.$store.dispatch('getCustomer')
-        } else {
-          await this.$router.push('/')
-        }
-      } catch (e) {
-        console.log(e.response.data.message)
-      }
     }
   },
   mounted() {
-    this.checkAuth()
+    if (localStorage.getItem('token')) {
+      this.$store.dispatch('checkAuth')
+      this.$store.dispatch('getCustomer')
+    } else {
+      this.$router.push('/')
+    }
   }
 }
 

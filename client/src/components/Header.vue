@@ -1,14 +1,13 @@
 <template>
   <header class="header">
     <v-container>
-      <Login v-if="isLoginVisible" @hideLogin="hideLogin"/>
       <v-row class="align-center justify-space-between row">
         <v-col md="4" class="d-flex header__logo">
           <router-link :to="'/'"><img src="@/assets/logo.png" alt=""/></router-link>
         </v-col>
 
         <v-col md="3" class="d-flex header__items align-center">
-          <div class="header__account" @click="checkAuth">
+          <div class="header__account" @click="openAccount">
             <a v-if="!$store.getters.isAuth" class="header__account-auth">Войти</a>
             <a class="d-flex flex-column justify-center align-center header__account-cabinet" v-else>
               <svg width="28" height="27" viewBox="0 0 25 24" fill="none">
@@ -23,7 +22,7 @@
             </a>
           </div>
 
-          <button class="d-flex justify-center align-center header__cart" @click="$router.push('cart')">
+          <button class="d-flex justify-center align-center header__cart" @click="$router.push('/cart')">
             <div class="header__cart-price">
               <p v-if="totalPrice === 0">Корзина</p>
               <p v-else>{{ totalPrice }} ₽</p>
@@ -41,8 +40,6 @@
 </template>
 
 <script>
-import Login from '@/components/Login'
-import axios from "axios";
 
 export default {
   name: 'top',
@@ -56,35 +53,12 @@ export default {
       required: true
     }
   },
-  components: {
-    Login
-  },
-  data() {
-    return {
-      isLoginVisible: false,
-    }
-  },
   methods: {
-    showLogin() {
-      this.isLoginVisible = true
-      document.querySelector('html').classList.add('lock')
-    },
-    hideLogin() {
-      this.isLoginVisible = false
-      document.querySelector('html').classList.remove('lock')
-    },
-    async checkAuth() {
-      try {
-        const response = await axios.get('refresh', {withCredentials: true})
-        if (response.data.message) {
-          this.showLogin()
-        } else {
-          localStorage.setItem('token', response.data.accessToken)
-          this.$store.commit('LOGIN')
-          await this.$router.push(`/customer/${this.$store.getters.customer.customer_id}`)
-        }
-      } catch (e) {
-        console.log(e.response.data.message)
+    async openAccount() {
+      if (!this.$store.getters.isAuth) {
+        this.$store.commit('SHOW_LOGIN')
+      } else {
+        await this.$router.push(`/customer/${this.$store.getters.customer.customer_id}`)
       }
     }
   }

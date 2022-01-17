@@ -1,11 +1,12 @@
 <template>
   <v-container>
+    <Order v-if="isOrderVisible" @hideOrder="hideOrder"/>
     <div v-if="totalCount !== 0" class="cart text-center">
       <div class="cart__top d-flex justify-space-between align-center">
         <div class="cart__title d-flex align-end">
           <h2 class="d-flex align-center"><img src="@/assets/cart.svg" alt="">Корзина</h2>
         </div>
-        <div class="cart__clear d-flex align-center" @click="$store.commit('CLEAR_CART')">
+        <div class="cart__clear d-flex align-center" @click="$store.commit('RESET_PIZZAS'); $store.commit('CLEAR_CART')">
           <img src="@/assets/cart-clear.svg" alt="">
           <span>Очистить корзину</span>
         </div>
@@ -21,7 +22,7 @@
           </div>
           <div class="cart__item-count d-flex align-center justify-space-between">
             <div class="cart__item-count-minus d-flex align-center justify-center">
-              <button class="button--circle" @click="$store.commit('DECREASE_QUANTITY', index)">
+              <button class="button--circle" @click="$store.commit('DECREASE_PIZZA', item.id); $store.commit('DECREASE_QUANTITY', index)">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                       d="M5.75998 5.92001L3.83998 5.92001L0.959977 5.92001C0.429817 5.92001 -2.29533e-05 5.49017 -2.29301e-05 4.96001C-2.2907e-05 4.42985 0.429817 4.00001 0.959977 4.00001L3.83998 4L5.75998 4.00001L8.63998 4.00001C9.17014 4.00001 9.59998 4.42985 9.59998 4.96001C9.59998 5.49017 9.17014 5.92001 8.63998 5.92001L5.75998 5.92001Z"
@@ -31,7 +32,7 @@
             </div>
             <b>{{ item.quantity }}</b>
             <div class="cart__item-count-plus d-flex justify-center align-center">
-              <button class="button--circle" @click="$store.commit('INCREASE_QUANTITY', index)">
+              <button class="button--circle" @click="$store.commit('INCREASE_PIZZA', item.id); $store.commit('INCREASE_QUANTITY', index)">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                       d="M5.92001 3.84V5.76V8.64C5.92001 9.17016 5.49017 9.6 4.96001 9.6C4.42985 9.6 4.00001 9.17016 4.00001 8.64L4 5.76L4.00001 3.84V0.96C4.00001 0.42984 4.42985 0 4.96001 0C5.49017 0 5.92001 0.42984 5.92001 0.96V3.84Z"
@@ -45,7 +46,7 @@
           </div>
           <div class="cart__item-price"><b>{{ item.price * item.quantity }} ₽</b></div>
           <div class="cart__item-remove d-flex justify-center align-center">
-            <button class="button--circle" @click="$store.commit('REMOVE_FROM_CART', index)">
+            <button class="button--circle" @click="$store.commit('REMOVE_PIZZA', item.id); $store.commit('REMOVE_FROM_CART', index)">
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M5.92001 3.84V5.76V8.64C5.92001 9.17016 5.49017 9.6 4.96001 9.6C4.42985 9.6 4.00001 9.17016 4.00001 8.64L4 5.76L4.00001 3.84V0.96C4.00001 0.42984 4.42985 0 4.96001 0C5.49017 0 5.92001 0.42984 5.92001 0.96V3.84Z"
@@ -64,14 +65,14 @@
           <span>Сумма заказа: <b>{{ totalPrice }} ₽</b></span>
         </div>
         <div class="cart__bottom-buttons d-flex justify-space-between align-center">
-          <button class="d-flex justify-center align-center" @click="$router.push('/')">
+          <button class="back-btn d-flex justify-center align-center" @click="$router.push('/')">
             <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 13L1 6.93015L6.86175 1" stroke="#D3D3D3" stroke-width="1.5" stroke-linecap="round"
                     stroke-linejoin="round"></path>
             </svg>
             <span class="ps-2">Вернуться назад</span>
           </button>
-          <button class="pay-btn">Оплатить сейчас</button>
+          <button class="pay-btn" @click="showOrder">Оформить заказ</button>
         </div>
       </div>
     </div>
@@ -87,8 +88,11 @@
 </template>
 
 <script>
+import Order from '@/components/Order'
+
 export default {
   name: "Cart",
+  components: {Order},
   props: {
     totalPrice: {
       type: Number,
@@ -97,6 +101,25 @@ export default {
     totalCount: {
       type: Number,
       required: true
+    }
+  },
+  data() {
+    return {
+      isOrderVisible: false
+    }
+  },
+  methods: {
+    showOrder() {
+      if (this.$store.getters.isAuth) {
+        this.isOrderVisible = true
+        document.querySelector('html').classList.add('lock')
+      } else {
+        this.$store.commit('SHOW_LOGIN')
+      }
+    },
+    hideOrder() {
+      this.isOrderVisible = false
+      document.querySelector('html').classList.remove('lock')
     }
   }
 }
@@ -225,28 +248,9 @@ img {
       button {
         font-size: 16px;
         width: 210px;
-        color: #c3c3c3;
-        border: 1px solid #D3D3D3;
         border-radius: 30px;
         padding: 16px;
         transition: all .15s ease-in-out;
-
-        &:hover {
-          color: #FFFFFF;
-          background-color: #000000;
-          border-color: #000000;
-        }
-      }
-
-      .pay-btn {
-        color: #FFFFFF;
-        font-weight: 600;
-        background-color: #FE5F1E;
-        border: none;
-
-        &:hover {
-          background-color: #f24701;
-        }
       }
     }
   }
