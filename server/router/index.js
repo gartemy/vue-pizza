@@ -1,6 +1,7 @@
 const Router = require('express').Router
 const customerController = require('../controllers/customer-controller')
 const pizzaController = require('../controllers/pizza-controller')
+const orderController = require('../controllers/order-controller')
 const {body} = require('express-validator')
 const loginMiddleware = require('../middlewares/login-middleware')
 
@@ -19,8 +20,8 @@ router.post('/verify',
 router.post('/logout', customerController.logout)
 router.get('/refresh', customerController.refresh)
 router.get('/info', loginMiddleware, customerController.getCustomerInfo)
-router.put('/set-name', loginMiddleware, customerController.setCustomerName)
-router.put('/set-phone', loginMiddleware, customerController.setCustomerPhone)
-router.put('/set-birthday', loginMiddleware, customerController.setCustomerBirthday)
-
+router.put('/name', loginMiddleware, customerController.setCustomerName)
+router.put('/phone', loginMiddleware, customerController.setCustomerPhone)
+router.put('/birthday', loginMiddleware, customerController.setCustomerBirthday)
+router.post('/orders', loginMiddleware, orderController.makeOrder)
 module.exports = router

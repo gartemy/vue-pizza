@@ -30,7 +30,7 @@
       <input type="text" v-model="$store.getters.customer.email" :disabled="true">
     </div>
 
-    <button class="back-btn" @click="logout">Выйти</button>
+    <button class="logout-btn" @click="logout">Выйти</button>
   </v-container>
 </template>
 
@@ -61,7 +61,7 @@ export default {
     },
     async setName() {
       if (this.firstName !== null) {
-        await axios.put('set-name', {
+        await axios.put('name', {
           firstName: this.firstName
         }, {
           headers: {Authorization: "Bearer " + localStorage.getItem('token')}
@@ -71,7 +71,7 @@ export default {
     },
     async setPhone() {
       if (this.phoneNumber !== null) {
-        const result = await axios.put('set-phone', {
+        const result = await axios.put('phone', {
           phone: this.phoneNumber
         }, {
           headers: {Authorization: "Bearer " + localStorage.getItem('token')}
@@ -84,7 +84,7 @@ export default {
     },
     async setBirthday() {
       if (this.birthDay !== null) {
-        await axios.put('set-birthday', {
+        await axios.put('birthday', {
           birthday: this.birthDay
         }, {
           headers: {Authorization: "Bearer " + localStorage.getItem('token')}
@@ -172,7 +172,7 @@ input:disabled {
   cursor: not-allowed;
 }
 
-.back-btn {
+.logout-btn {
   margin-top: 20px;
   background-color: #efefef;
   color: rgb(92, 99, 112);

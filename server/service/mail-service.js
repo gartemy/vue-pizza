@@ -17,7 +17,17 @@ class MailService {
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
             to: email,
-            subject: `${secretCode} - код для входа на сайт vue-pizza. Никому не говорите код.`
+            subject: `${secretCode} - код для входа на сайт vue-pizza`,
+            text: 'Никому не говорите код'
+        })
+    }
+
+    async sendOrderMail(email, orderId) {
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to: email,
+            subject: `Заказ №${orderId} подтверждён`,
+            text: 'Курьер прибудет в ближайшее время. Приятного аппетита!'
         })
     }
 }

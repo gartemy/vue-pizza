@@ -10,40 +10,41 @@
         </div>
 
         <div class="modal-body">
-            <div class="tabs">
-              <ul class="tab">
-                <li v-for="tab in tabs" :key="tab.id" class="tab__item" :class="{active: tab.id === activeTab}">
-                  <button type="button" class="tab__link" @click="activeTab = tab.id">
-                    <span>{{ tab.title }}</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
+          <div class="tabs">
+            <ul class="tab">
+              <li v-for="tab in tabs" :key="tab.id" class="tab__item" :class="{active: tab.id === activeTab}">
+                <button type="button" class="tab__link" @click="activeTab = tab.id">
+                  <span>{{ tab.title }}</span>
+                </button>
+              </li>
+            </ul>
+          </div>
 
-            <div v-if="activeTab === 1" class="modal-body__order">
-              <div class="modal-body__order-info d-flex">
-                <input type="text" v-model.lazy="homeAddress.street" placeholder="Улица">
-                <input type="text" v-model=" homeAddress.house" placeholder="Дом" :disabled="!homeAddress.street">
-                <input type="text" v-model="homeAddress.flat" placeholder="Квартира">
-                <input type="text" v-model="homeAddress.door" placeholder="Подъезд" maxlength="2">
-                <input type="text" v-model="homeAddress.stage" placeholder="Этаж" maxlength="2">
-                <textarea rows="3" v-model="homeAddress.comment" placeholder="Комментарий к заказу"></textarea>
-              </div>
-              <button class="pay-btn confirm-btn" @click="makeOrder"
-                      :disabled="!homeAddress.street || !homeAddress.house">Подтвердить заказ
-              </button>
+          <div v-if="activeTab === 1" class="modal-body__order">
+            <div class="modal-body__order-info d-flex">
+              <input type="text" v-model="homeAddress.street" placeholder="Улица" @keypress="isNumber">
+              <input v-if="homeAddress.street === ''" type="text" :value="''" placeholder="Дом" :disabled="!homeAddress.street">
+              <input v-else type="text" v-model=" homeAddress.house" placeholder="Дом">
+              <input type="text" v-model="homeAddress.flat" placeholder="Квартира" @keypress="isNotNumber">
+              <input type="text" v-model="homeAddress.door" placeholder="Подъезд" maxlength="2" @keypress="isNotNumber">
+              <input type="text" v-model="homeAddress.stage" placeholder="Этаж" maxlength="2" @keypress="isNotNumber">
+              <textarea rows="3" v-model="homeAddress.comment" placeholder="Комментарий к заказу" maxlength="140"></textarea>
             </div>
+            <button class="pay-btn confirm-btn" @click="makeOrder"
+                    :disabled="!homeAddress.street || !homeAddress.house">Подтвердить заказ
+            </button>
+          </div>
 
-            <div v-else class="modal-body__order">
-              <div class="modal-body__order-info d-flex">
-                <input type="text" v-model.lazy="workAddress.street" placeholder="Улица">
-                <input type="text" v-model="workAddress.house" placeholder="Здание" :disabled="!workAddress.street">
-                <textarea rows="3" v-model="workAddress.comment" placeholder="Комментарий к заказу"></textarea>
-              </div>
-              <button class="pay-btn confirm-btn" @click="makeOrder"
-                      :disabled="!workAddress.street || !workAddress.house">Подтвердить заказ
-              </button>
+          <div v-else class="modal-body__order">
+            <div class="modal-body__order-info d-flex">
+              <input type="text" v-model.lazy="workAddress.street" placeholder="Улица" @keypress="isNumber">
+              <input type="text" v-model="workAddress.house" placeholder="Здание" :disabled="!workAddress.street">
+              <textarea rows="3" v-model="workAddress.comment" placeholder="Комментарий к заказу" maxlength="140"></textarea>
             </div>
+            <button class="pay-btn confirm-btn" @click="makeOrder"
+                    :disabled="!workAddress.street || !workAddress.house">Подтвердить заказ
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -51,6 +52,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: "Order",
   data() {
@@ -76,11 +79,43 @@ export default {
     }
   },
   methods: {
+    isNumber(event) {
+      if ("1234567890".indexOf(event.key) != -1) {
+        event.preventDefault()
+      }
+    },
+    isNotNumber(event) {
+      if ("1234567890".indexOf(event.key) == -1) {
+        event.preventDefault()
+      }
+    },
     hideOrder() {
       this.$emit('hideOrder')
     },
-    makeOrder() {
-      console.log('Делаем заказ')
+    async makeOrder() {
+      try {
+        if (this.activeTab === 1) {
+          await axios.post('orders', {
+            orderInfo: this.homeAddress,
+            totalPrice: this.$store.getters.totalPrice,
+            cartItems: this.$store.getters.cartItems
+          }, {
+            headers: {Authorization: "Bearer " + localStorage.getItem('token')}
+          })
+        } else if (this.activeTab === 2) {
+          await axios.post('orders', {
+            orderInfo: this.workAddress,
+            totalPrice: this.$store.getters.totalPrice,
+            cartItems: this.$store.getters.cartItems
+          }, {
+            headers: {Authorization: "Bearer " + localStorage.getItem('token')}
+          })
+        }
+        this.$store.commit('CLEAR_CART')
+        this.hideOrder()
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
