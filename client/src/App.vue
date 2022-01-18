@@ -143,6 +143,10 @@ p {
   }
 }
 
+.failed {
+  border-color: red!important;
+}
+
 @media (max-width: 594px) {
   body {
     padding: 0;

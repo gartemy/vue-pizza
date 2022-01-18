@@ -11,7 +11,6 @@
         </div>
 
         <div v-if="stage == 'login'" class="modal-body">
-          <slot name="body">
             <p class="mb-2" v-if="error" :style="{color: 'red'}">Некорректный адрес!</p>
             <p class="mb-2" v-else>Адрес электронной почты</p>
             <div class="text-center">
@@ -19,7 +18,6 @@
               ><br>
               <button @click="login">Выслать код</button>
             </div>
-          </slot>
         </div>
 
         <div v-if="stage == 'verify'" class="modal-header">
@@ -31,13 +29,11 @@
         </div>
 
           <div v-if="stage == 'verify'" class="modal-body">
-            <slot name="body">
               <p class="mb-2" v-if="error" :style="{color: 'red'}">Неправильный код!</p>
               <div class="text-center">
                 <input type="text" v-model="code" name="code" maxlength="4" placeholder="****" :class="{failed: error}"><br>
                 <button @click="verify">Отправить код</button>
               </div>
-            </slot>
           </div>
         </div>
     </div>
@@ -155,10 +151,6 @@ export default {
       line-height: 24px;
     }
   }
-}
-
-.failed {
-  border-color: red!important;
 }
 
 .verify__address {
