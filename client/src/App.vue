@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <Login v-if="$store.getters.isLoginVisible"/>
-    <Header :totalPrice="totalPrice" :totalCount="totalCount"/>
-    <router-view :totalPrice="totalPrice" :totalCount="totalCount"></router-view>
+    <Header/>
+    <router-view></router-view>
   </v-app>
 </template>
 
@@ -15,15 +15,7 @@ export default {
   components: {
     Header, Login
   },
-  computed: {
-    totalPrice() {
-      return this.$store.state.cart.cartItems.reduce((res, pizza) => res + pizza.price * pizza.quantity, 0)
-    },
-    totalCount() {
-      return this.$store.state.cart.cartItems.reduce((res, pizza) => res + pizza.quantity, 0)
-    }
-  },
-  mounted() {
+  created() {
     this.$store.dispatch('checkAuth')
     this.$store.dispatch('getCustomer')
   }

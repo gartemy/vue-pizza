@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <Order v-if="isOrderVisible" @hideOrder="hideOrder"/>
-    <div v-if="totalCount !== 0" class="cart text-center">
+    <div v-if="$store.getters.totalCount !== 0" class="cart text-center">
       <div class="cart__top d-flex justify-space-between align-center">
         <div class="cart__title d-flex align-end">
           <h2 class="d-flex align-center"><img src="@/assets/cart.svg" alt="">Корзина</h2>
@@ -61,8 +61,8 @@
       </div>
       <div class="cart__bottom">
         <div class="cart__bottom-info d-flex align-center justify-space-between">
-          <span>Всего пицц: <b>{{ totalCount }} шт.</b></span>
-          <span>Сумма заказа: <b>{{ totalPrice }} ₽</b></span>
+          <span>Всего пицц: <b>{{ $store.getters.totalCount }} шт.</b></span>
+          <span>Сумма заказа: <b>{{ $store.getters.totalPrice }} ₽</b></span>
         </div>
         <div class="cart__bottom-buttons d-flex justify-space-between align-center">
           <button class="back-btn d-flex justify-center align-center" @click="$router.push('/')">
@@ -94,10 +94,6 @@ export default {
   name: "Cart",
   components: {Order},
   props: {
-    totalPrice: {
-      type: Number,
-      required: true
-    },
     totalCount: {
       type: Number,
       required: true

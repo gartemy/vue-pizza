@@ -24,13 +24,13 @@
 
           <button class="d-flex justify-center align-center header__cart" @click="$router.push('/cart')">
             <div class="header__cart-price">
-              <p v-if="totalPrice === 0">Корзина</p>
-              <p v-else>{{ totalPrice }} ₽</p>
+              <p v-if="$store.getters.totalPrice === 0">Корзина</p>
+              <p v-else>{{ $store.getters.totalPrice }} ₽</p>
             </div>
 
             <div class="d-flex justify-center align-center header__cart-quantity">
               <img src="@/assets/cart-button.svg" alt="">
-              <p>{{ totalCount }}</p>
+              <p>{{ $store.getters.totalCount }}</p>
             </div>
           </button>
         </v-col>
@@ -43,16 +43,6 @@
 
 export default {
   name: 'top',
-  props: {
-    totalPrice: {
-      type: Number,
-      required: true
-    },
-    totalCount: {
-      type: Number,
-      required: true
-    }
-  },
   methods: {
     async openAccount() {
       if (!this.$store.getters.isAuth) {

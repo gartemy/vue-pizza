@@ -1,11 +1,15 @@
 import Vue from "vue";
 
 const state = {
-    cartItems: []
+    cartItems: [],
+    totalCount: 0,
+    totalPrice: 0
 }
 
 const getters = {
-    cartItems: state => state.cartItems
+    cartItems: state => state.cartItems,
+    totalCount: state => state.totalCount,
+    totalPrice: state => state.totalPrice
 }
 
 const mutations = {
@@ -17,20 +21,30 @@ const mutations = {
             state.cartItems.push(pizza)
             Vue.set(pizza, 'quantity', 1)
         }
+        state.totalCount++
+        state.totalPrice += pizza.price
     },
     'INCREASE_QUANTITY'(state, index) {
         state.cartItems[index].quantity++
+        state.totalCount++
+        state.totalPrice += state.cartItems[index].price
     },
     'DECREASE_QUANTITY'(state, index) {
         if (state.cartItems[index].quantity > 1) {
             state.cartItems[index].quantity--
+            state.totalCount--
+            state.totalPrice -= state.cartItems[index].price
         }
     },
     'REMOVE_FROM_CART'(state, index) {
+        state.totalCount -= state.cartItems[index].quantity
+        state.totalPrice -= state.cartItems[index].price * state.cartItems[index].quantity
         state.cartItems = state.cartItems.filter((item, i) => i !== index)
     },
     'CLEAR_CART' (state) {
         state.cartItems = []
+        state.totalCount = 0
+        state.totalPrice = 0
     }
 }
 
