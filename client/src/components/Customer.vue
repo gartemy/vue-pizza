@@ -99,6 +99,7 @@ export default {
       await axios.post('logout', {withCredentials: true, credentials: 'include'})
       localStorage.removeItem('token')
       this.$store.commit('LOGOUT')
+      this.$store.commit('SET_LOADING')
       await this.$router.push('/')
     }
   },

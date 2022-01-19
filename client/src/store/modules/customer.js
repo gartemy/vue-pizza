@@ -44,6 +44,12 @@ const mutations = {
     },
     'SET_EMAIL'(state, email) {
         state.customer.email = email
+    },
+    'SET_LOADING' (state) {
+        state.isLoading = true
+    },
+    'REMOVE_LOADING' (state) {
+        state.isLoading = false
     }
 }
 
@@ -63,7 +69,7 @@ const actions = {
         } catch (e) {
             console.log(e)
         } finally {
-            state.isLoading = false
+            commit('REMOVE_LOADING')
         }
     },
     async checkAuth({commit}) {
