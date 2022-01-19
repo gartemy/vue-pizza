@@ -93,12 +93,6 @@ import Order from '@/components/Order'
 export default {
   name: "Cart",
   components: {Order},
-  props: {
-    totalCount: {
-      type: Number,
-      required: true
-    }
-  },
   data() {
     return {
       isOrderVisible: false

@@ -112,6 +112,7 @@ export default {
           })
         }
         this.$store.commit('CLEAR_CART')
+        this.$store.commit('RESET_PIZZAS')
         this.hideOrder()
       } catch (e) {
         console.log(e)
