@@ -10,7 +10,8 @@
   <img src="https://img.shields.io/badge/pgpool-3.4.1-blue.svg">
 </p>
 
-Веб-приложение доставки пиццы **Vue pizza**
+Веб-приложение доставки пиццы **Vue pizza**  
+Вдохновлено проектом [React pizza](https://github.com/Archakov06/react-pizza) от [Archakov Blog](https://www.youtube.com/c/ArchakovBlog)
 
 <h2>Клиентская часть</h2>
 <h3>Внешний вид приложения</h3>
