@@ -11,3 +11,30 @@
 </p>
 
 Веб-приложение доставки пиццы **Vue pizza**
+
+<h2>Клиентская часть</h2>
+<h3>Внешний вид приложения</h3>
+<p align="center">
+ <img align="center" src="https://github.com/gartemy/vue-pizza/blob/master/client/src/assets/example/Main.gif">
+</p>
+
+<h3>Корзина</h3>
+<p align="center">
+ <img align="center" src="https://github.com/gartemy/vue-pizza/blob/master/client/src/assets/example/Basket.gif">
+</p>
+
+<h3>Авторизация<h3>
+<p align="center">
+ <img align="center" src="https://github.com/gartemy/vue-pizza/blob/master/client/src/assets/example/Auth.gif">
+</p>
+  
+<h3>Оформление заказа</h3>
+<p align="center">
+ <img align="center" src="https://github.com/gartemy/vue-pizza/blob/master/client/src/assets/example/Order.gif">
+</p>
+
+<h2>Серверная часть</h2>
+<h3>Схема базы данных</h3>
+<p align="center">
+ <img align="center" src="https://github.com/gartemy/vue-pizza/blob/master/client/src/assets/example/database.png">
+</p>
