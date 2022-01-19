@@ -4,12 +4,14 @@ const state = {
     customer: {},
     isAuth: false,
     isLoginVisible: false,
+    isLoading: true
 }
 
 const getters = {
     customer: state => state.customer,
     isAuth: state => state.isAuth,
-    isLoginVisible: state => state.isLoginVisible
+    isLoginVisible: state => state.isLoginVisible,
+    isLoading: state => state.isLoading
 }
 
 const mutations = {
@@ -60,6 +62,8 @@ const actions = {
             commit('GET_INFO', response.data.rows[0])
         } catch (e) {
             console.log(e)
+        } finally {
+            state.isLoading = false
         }
     },
     async checkAuth({commit}) {

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="!$store.getters.isLoading">
     <h1>Личные данные</h1>
     <div class="profile__row">
       <label>Имя</label><br>
@@ -31,6 +31,9 @@
     </div>
 
     <button class="logout-btn" @click="logout">Выйти</button>
+  </v-container>
+  <v-container v-else>
+    <h1>Загрузка...</h1>
   </v-container>
 </template>
 
